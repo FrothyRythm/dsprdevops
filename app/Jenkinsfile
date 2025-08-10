@@ -1,0 +1,53 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_ACCESS_KEY_ID     = credentials('aws-access-key')
+    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+    DOCKER_HUB_CREDENTIALS = credentials('docker-hub')
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/FrothyRythm/project010.git'
+      }
+    }
+
+    stage('Build') {
+      steps {
+        script {
+          docker.build("tech-nova-app:${env.BUILD_ID}")
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sh 'docker run tech-nova-app:${env.BUILD_ID} npm test'
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        script {
+          docker.withRegistry('https://index.docker.io/v1/', 'docker-hub') {
+            docker.image("tech-nova-app:${env.BUILD_ID}").push()
+          }
+        }
+      }
+    }
+
+    stage('Notify') {
+      steps {
+        emailext (
+          subject: "Deployment Notification - Build ${env.BUILD_ID}",
+          body: """<p>Build ${env.BUILD_ID} has been deployed successfully.</p>
+                  <p>Check console output at <a href="${env.BUILD_URL}">${env.JOB_NAME} #${env.BUILD_NUMBER}</a></p>""",
+          to: "${env.GMAIL_USER}",
+          recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+        )
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+github
+docker
+docker-pipeline
+email-ext
+credentials-binding
+aws-credentials
