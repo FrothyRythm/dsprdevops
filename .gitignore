@@ -3,3 +3,38 @@ terraform.tfvars
 *.tfstate
 *.tfstate.backup
 .terraform/
+# General
+.DS_Store
+*.log
+*.swp
+*.env
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate*
+*.backup
+
+# Node.js
+**/node_modules/
+**/package-lock.json
+npm-debug.log
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+
+# System Files
+Thumbs.db
+ehthumbs.db
+
+# AWS
+*.pem
+*.key
+
+# Build artifacts
+**/dist/
+**/.build/
+**/coverage/
